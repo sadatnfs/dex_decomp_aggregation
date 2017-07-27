@@ -493,7 +493,13 @@ fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- FINAL_colla
                                                                           by=c("fn" ,   "final_effect", "draw")]
 
 
+time_effects_by_fn_FINAL <- fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
+                                                                         lower = quantile(data, .025, na.rm=T),
+                                                                         upper = quantile(data, .975, na.rm=T)), by=c("fn", "final_effect")  ]
 
+
+
+write.dta(time_effects_by_fn_FINAL, file = "time_effects_by_fn_FINAL.dta")
 
 # draws <- paste0("d_",c(1:1000))
 
@@ -521,11 +527,6 @@ acause_fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- collapse_t
 ### Mean and UIs
 
 ### Functions
-
-
-time_effects_by_fn_FINAL <- fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
-                                                                         lower = quantile(data, .025, na.rm=T),
-                                                                         upper = quantile(data, .975, na.rm=T)), by=c("fn", "final_effect")  ]
 
 
 time_effects_by_fn <- fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
