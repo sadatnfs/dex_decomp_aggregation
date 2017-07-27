@@ -23,13 +23,14 @@ if(Sys.info()[1]=="Windows") {
 } else {
   loc <- "/homes/sadatnfs"
   jloc <- "/home/j/Project/IRH/DEX/USA/_explore/decomp/results_stats"
+  jloc_d <- "/home/j/Project/IRH/DEX/USA/_explore/decomp"
 }
 
 setwd(jloc)
 
 ## Bring in the draws (wide by draws)
 
-wide_merged_string <- fread(paste0(loc,"/dex_comps/wide_merged_string_clu.csv"))
+wide_merged_string <- fread(paste0(jloc_d,"/wide_merged_string_clu.csv"))
 
 
 # long_binded <- fread(paste0(loc,"/dex_comps/long_binded_string.csv"))
@@ -348,52 +349,10 @@ collapse_the_timez_huge <- wide_merged_string[  variable != "final_effect" &
                                                               variable != "final_price_effect" & 
                                                               variable != "final_util_rate_effect" , ]
 
+rm(wide_merged_string)
 
 
-
-
-
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "population_effect_12" | variable == "population_effect_23" | variable == "population_effect_34" | variable == "population_effect_45" | variable == "population_effect_56" | variable == "population_effect_67", effect:= "population_effect_1"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "population_effect_78" | variable == "population_effect_89" | variable == "population_effect_910"  | variable == "population_effect_1011"  | variable == "population_effect_1112" | variable == "population_effect_1213", effect:= "population_effect_2"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "population_effect_1314" | variable == "population_effect_1415" | variable == "population_effect_1516" | variable == "population_effect_1617" | variable == "population_effect_1718", effect:= "population_effect_3"]
-
-
-
-
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "pop_frac_effect_12" | variable == "pop_frac_effect_23" | variable == "pop_frac_effect_34" | variable == "pop_frac_effect_45" | variable == "pop_frac_effect_56" | variable == "pop_frac_effect_67" , effect:= "pop_frac_effect_1"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "pop_frac_effect_78" | variable == "pop_frac_effect_89" | variable == "pop_frac_effect_910" | variable == "pop_frac_effect_1011" | variable == "pop_frac_effect_1112" | variable == "pop_frac_effect_1213" , effect:= "pop_frac_effect_2"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "pop_frac_effect_1314" | variable == "pop_frac_effect_1415" | variable == "pop_frac_effect_1516" | variable == "pop_frac_effect_1617" | variable == "pop_frac_effect_1718" , effect:= "pop_frac_effect_3"]
-
-
-
-
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "epi_rate_effect_12" | variable == "epi_rate_effect_23" | variable == "epi_rate_effect_34" | variable == "epi_rate_effect_45" | variable == "epi_rate_effect_56" | variable == "epi_rate_effect_67", effect:= "epi_rate_effect_1"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "epi_rate_effect_78" | variable == "epi_rate_effect_89" | variable == "epi_rate_effect_910" | variable == "epi_rate_effect_1011" | variable == "epi_rate_effect_1112" | variable == "epi_rate_effect_1213", effect:= "epi_rate_effect_2"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "epi_rate_effect_1314" | variable == "epi_rate_effect_1415" | variable == "epi_rate_effect_1516" | variable == "epi_rate_effect_1617" | variable == "epi_rate_effect_1718", effect:= "epi_rate_effect_3"]
-
-
-
-
-
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "util_rate_effect_12" | variable == "util_rate_effect_23"  | variable == "util_rate_effect_34" | variable == "util_rate_effect_45" | variable == "util_rate_effect_56" | variable == "util_rate_effect_67", effect:= "util_rate_effect_1"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "util_rate_effect_78" | variable == "util_rate_effect_89" | variable == "util_rate_effect_910" | variable == "util_rate_effect_1011" | variable == "util_rate_effect_1112" | variable == "util_rate_effect_1213", effect:= "util_rate_effect_2"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "util_rate_effect_1314" | variable == "util_rate_effect_1415" | variable == "util_rate_effect_1516" | variable == "util_rate_effect_1617" | variable == "util_rate_effect_1718", effect:= "util_rate_effect_3"]
-
-
-
-
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "price_effect_12"  | variable == "price_effect_23" | variable == "price_effect_34" | variable == "price_effect_45" | variable == "price_effect_56" | variable == "price_effect_67", effect:= "price_effect_1"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "price_effect_78" | variable == "price_effect_89" | variable == "price_effect_910"  | variable == "price_effect_1011"  | variable == "price_effect_1112" | variable == "price_effect_1213", effect:= "price_effect_2"]
-collapse_the_timez_huge <- collapse_the_timez_huge[variable == "price_effect_1314" | variable == "price_effect_1415" | variable == "price_effect_1516" | variable == "price_effect_1617" | variable == "price_effect_1718", effect:= "price_effect_3"]
-
-collapse_the_timez_huge[, variable:=NULL]
-
-
-
-
-# draws <- paste0("d_",c(1:1000))
-
-## Drop the draws
+## Drop the draws which died from thresholds
 collapse_the_timez_huge[, d_529:=NULL]
 collapse_the_timez_huge[, d_579:=NULL]
 collapse_the_timez_huge[, d_504:=NULL]
@@ -464,9 +423,83 @@ collapse_the_timez_huge[, d_249:=NULL]
 collapse_the_timez_huge[, d_199:=NULL]
 collapse_the_timez_huge[, d_78:=NULL]
 
-system.time(collapse_the_timez_huge_trunc <- melt(collapse_the_timez_huge, id.vars = c("fn", "acause", "sex", "age", "effect"), 
+
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "population_effect_12" | variable == "population_effect_23" | variable == "population_effect_34" | variable == "population_effect_45" | variable == "population_effect_56" | variable == "population_effect_67", effect:= "population_effect_1"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "population_effect_78" | variable == "population_effect_89" | variable == "population_effect_910"  | variable == "population_effect_1011"  | variable == "population_effect_1112" | variable == "population_effect_1213", effect:= "population_effect_2"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "population_effect_1314" | variable == "population_effect_1415" | variable == "population_effect_1516" | variable == "population_effect_1617" | variable == "population_effect_1718", effect:= "population_effect_3"]
+
+
+
+
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "pop_frac_effect_12" | variable == "pop_frac_effect_23" | variable == "pop_frac_effect_34" | variable == "pop_frac_effect_45" | variable == "pop_frac_effect_56" | variable == "pop_frac_effect_67" , effect:= "pop_frac_effect_1"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "pop_frac_effect_78" | variable == "pop_frac_effect_89" | variable == "pop_frac_effect_910" | variable == "pop_frac_effect_1011" | variable == "pop_frac_effect_1112" | variable == "pop_frac_effect_1213" , effect:= "pop_frac_effect_2"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "pop_frac_effect_1314" | variable == "pop_frac_effect_1415" | variable == "pop_frac_effect_1516" | variable == "pop_frac_effect_1617" | variable == "pop_frac_effect_1718" , effect:= "pop_frac_effect_3"]
+
+
+
+
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "epi_rate_effect_12" | variable == "epi_rate_effect_23" | variable == "epi_rate_effect_34" | variable == "epi_rate_effect_45" | variable == "epi_rate_effect_56" | variable == "epi_rate_effect_67", effect:= "epi_rate_effect_1"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "epi_rate_effect_78" | variable == "epi_rate_effect_89" | variable == "epi_rate_effect_910" | variable == "epi_rate_effect_1011" | variable == "epi_rate_effect_1112" | variable == "epi_rate_effect_1213", effect:= "epi_rate_effect_2"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "epi_rate_effect_1314" | variable == "epi_rate_effect_1415" | variable == "epi_rate_effect_1516" | variable == "epi_rate_effect_1617" | variable == "epi_rate_effect_1718", effect:= "epi_rate_effect_3"]
+
+
+
+
+
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "util_rate_effect_12" | variable == "util_rate_effect_23"  | variable == "util_rate_effect_34" | variable == "util_rate_effect_45" | variable == "util_rate_effect_56" | variable == "util_rate_effect_67", effect:= "util_rate_effect_1"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "util_rate_effect_78" | variable == "util_rate_effect_89" | variable == "util_rate_effect_910" | variable == "util_rate_effect_1011" | variable == "util_rate_effect_1112" | variable == "util_rate_effect_1213", effect:= "util_rate_effect_2"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "util_rate_effect_1314" | variable == "util_rate_effect_1415" | variable == "util_rate_effect_1516" | variable == "util_rate_effect_1617" | variable == "util_rate_effect_1718", effect:= "util_rate_effect_3"]
+
+
+
+
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "price_effect_12"  | variable == "price_effect_23" | variable == "price_effect_34" | variable == "price_effect_45" | variable == "price_effect_56" | variable == "price_effect_67", effect:= "price_effect_1"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "price_effect_78" | variable == "price_effect_89" | variable == "price_effect_910"  | variable == "price_effect_1011"  | variable == "price_effect_1112" | variable == "price_effect_1213", effect:= "price_effect_2"]
+collapse_the_timez_huge <- collapse_the_timez_huge[variable == "price_effect_1314" | variable == "price_effect_1415" | variable == "price_effect_1516" | variable == "price_effect_1617" | variable == "price_effect_1718", effect:= "price_effect_3"]
+
+collapse_the_timez_huge[, variable:=NULL]
+
+
+
+#### Make a final effect 1 2 and 3 variable
+collapse_the_timez_huge <- collapse_the_timez_huge[effect == "price_effect_1" |
+effect == "util_rate_effect_1" | effect == "epi_rate_effect_1" | effect == "pop_frac_effect_1" | 
+effect == "population_effect_1" , final_effect:= "final_effect_1"]
+
+
+collapse_the_timez_huge <- collapse_the_timez_huge[effect == "price_effect_2" |
+effect == "util_rate_effect_2" | effect == "epi_rate_effect_2" | effect == "pop_frac_effect_2" | 
+effect == "population_effect_2" , final_effect:= "final_effect_2"]
+
+
+collapse_the_timez_huge <- collapse_the_timez_huge[effect == "price_effect_3" |
+effect == "util_rate_effect_3" | effect == "epi_rate_effect_3" | effect == "pop_frac_effect_3" | 
+effect == "population_effect_3" , final_effect:= "final_effect_3"]
+
+
+
+##### FINAL EFFECT BLOCK
+
+
+### Melt the draws long
+
+system.time(FINAL_collapse_the_timez_huge_trunc <- melt(collapse_the_timez_huge[, effect:=NULL], 
+							id.vars = c("fn", "acause", "sex", "age", "final_effect"), 
                            value.name = "data", variable.name = "draw"))
 
+
+#### let's sum away acause, age, sex (JUST FOR FINAL EFFECT DAMMIT)
+fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- FINAL_collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
+                                                                          by=c("fn" ,   "final_effect", "draw")]
+
+
+
+
+# draws <- paste0("d_",c(1:1000))
+
+### Melt the draws long
+system.time(collapse_the_timez_huge_trunc <- melt(collapse_the_timez_huge, id.vars = c("fn", "acause", "sex", "age", "effect"), 
+                           value.name = "data", variable.name = "draw"))
 
 
 #### let's sum away acause, age, sex
@@ -488,6 +521,12 @@ acause_fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- collapse_t
 ### Mean and UIs
 
 ### Functions
+
+
+time_effects_by_fn_FINAL <- fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
+                                                                         lower = quantile(data, .025, na.rm=T),
+                                                                         upper = quantile(data, .975, na.rm=T)), by=c("fn", "final_effect")  ]
+
 
 time_effects_by_fn <- fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
                                                                          lower = quantile(data, .025, na.rm=T),
