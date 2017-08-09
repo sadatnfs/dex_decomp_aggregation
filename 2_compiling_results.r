@@ -10,7 +10,7 @@ require(readstata13)
 require(data.table)
 
 # require(parallel)
-# require(feather)
+require(feather)
 require(Rcpp)
 # require(microbenchmark)
 # require(RcppRoll)
@@ -20,6 +20,8 @@ require(Rcpp)
 if(Sys.info()[1]=="Windows") {
   loc <- "H:/"
   jloc <- "J:/Project/IRH/DEX/USA/_explore/decomp/results_stats"
+   jloc_d <- "J:/Project/IRH/DEX/USA/_explore/decomp"
+
 } else {
   loc <- "/homes/sadatnfs"
   jloc <- "/home/j/Project/IRH/DEX/USA/_explore/decomp/results_stats"
@@ -30,7 +32,7 @@ setwd(jloc)
 
 ## Bring in the draws (wide by draws)
 
-wide_merged_string <- fread(paste0(jloc_d,"/wide_merged_string_clu.csv"))
+wide_merged_string <- data.table(read_feather(paste0(jloc_d,"/wide_merged_string_clu.feather")))
 
 
 # long_binded <- fread(paste0(loc,"/dex_comps/long_binded_string.csv"))
@@ -80,11 +82,11 @@ wide_merged_string <- fread(paste0(jloc_d,"/wide_merged_string_clu.csv"))
 
 
 melted_huge_finals <- wide_merged_string[variable == "final_effect" |
-                                        variable == "final_epi_rate_effect" |
-                                        variable == "final_pop_frac_effect" | 
-                                        variable == "final_population_effect" | 
-                                        variable == "final_price_effect" | 
-                                        variable == "final_util_rate_effect" , ]
+                                           variable == "final_epi_rate_effect" |
+                                           variable == "final_pop_frac_effect" | 
+                                           variable == "final_population_effect" | 
+                                           variable == "final_price_effect" | 
+                                           variable == "final_util_rate_effect" , ]
 
 
 # draws <- paste0("d_",c(1:1000))
@@ -165,7 +167,7 @@ melted_huge_finals[, d_78:=NULL]
 
 
 melted_huge_finals <- melt(melted_huge_finals, id.vars = c("fn", "acause", "sex", "age", "variable"),
- value.name = "data", variable.name = "draw")
+                           value.name = "data", variable.name = "draw")
 
 melted_final_vars <- melted_huge_finals
 
@@ -220,9 +222,9 @@ rm(melted_huge_finals)
 
 # final_by_all <- melted_final_vars[, list(sum_data = sum(data, na.rm=T)), by=c("acause","fn", "sex", "age", "variable", "draw")]
 final_by_all_stats <- melted_final_vars[, list(mean= mean(data), 
-                                                                  lower=quantile(data, 0.025, na.rm=TRUE),
-                                                                  upper=quantile(data, 0.975, na.rm=TRUE)), 
-                                   by=c("acause","fn", "sex", "age", "variable")]
+                                               lower=quantile(data, 0.025, na.rm=TRUE),
+                                               upper=quantile(data, 0.975, na.rm=TRUE)), 
+                                        by=c("acause","fn", "sex", "age", "variable")]
 
 
 
@@ -242,8 +244,8 @@ final_by_acause_variable_stats <- final_by_acause_variable[, list(mean= mean(sum
 
 final_by_fn_variable <- melted_final_vars[, list(sum_data = sum(data, na.rm=T)), by=c("fn", "variable", "draw")]
 final_by_fn_variable_stats <- final_by_fn_variable[, list(mean= mean(sum_data), 
-                                                                  lower=quantile(sum_data, 0.025, na.rm=TRUE),
-                                                                  upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("fn", "variable")]
+                                                          lower=quantile(sum_data, 0.025, na.rm=TRUE),
+                                                          upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("fn", "variable")]
 
 
 
@@ -251,8 +253,8 @@ final_by_fn_variable_stats <- final_by_fn_variable[, list(mean= mean(sum_data),
 
 final_by_acause_fn_variable <- melted_final_vars[, list(sum_data = sum(data, na.rm=T)), by=c("acause", "fn", "variable", "draw")]
 final_by_acause_fn_variable_stats <- final_by_acause_fn_variable[, list(mean= mean(sum_data), 
-                                                          lower=quantile(sum_data, 0.025, na.rm=TRUE),
-                                                          upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("acause", "fn", "variable")]
+                                                                        lower=quantile(sum_data, 0.025, na.rm=TRUE),
+                                                                        upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("acause", "fn", "variable")]
 
 
 #### DT where we sum away sexes and causes, but have just two values for ages  65+ vs <65)
@@ -265,14 +267,14 @@ melted_final_vars[age>=65, age_below_65:=0]
 
 final_by_age65_fn_variable <- melted_final_vars[, list(sum_data = sum(data, na.rm=T)), by=c("age_below_65", "fn", "variable", "draw")]
 final_by_age65_fn_variable_stats <- final_by_age65_fn_variable[, list(mean= mean(sum_data), 
-                                                                        lower=quantile(sum_data, 0.025, na.rm=TRUE),
-                                                                        upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("age_below_65", "fn", "variable")]
+                                                                      lower=quantile(sum_data, 0.025, na.rm=TRUE),
+                                                                      upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("age_below_65", "fn", "variable")]
 
 ### One version where we sum away everything!
 final_by_variable <- melted_final_vars[, list(sum_data = sum(data, na.rm=T)), by=c("variable", "draw")]
 final_by_variable_stats <- final_by_variable[, list(mean= mean(sum_data), 
-                                                                      lower=quantile(sum_data, 0.025, na.rm=TRUE),
-                                                                      upper=quantile(sum_data, 0.975, na.rm=TRUE)), 
+                                                    lower=quantile(sum_data, 0.025, na.rm=TRUE),
+                                                    upper=quantile(sum_data, 0.975, na.rm=TRUE)), 
                                              by=c("variable")]
 
 
@@ -286,8 +288,8 @@ melted_final_vars[grep("cvd", acause), cvd:=1]
 
 final_by_cvd_variable <- melted_final_vars[, list(sum_data = sum(data, na.rm=T)), by=c("cvd", "variable", "draw")]
 final_by_cvd_variable_stats <- final_by_cvd_variable[, list(mean= mean(sum_data), 
-                                                                  lower=quantile(sum_data, 0.025, na.rm=TRUE),
-                                                                  upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("cvd", "variable")]
+                                                            lower=quantile(sum_data, 0.025, na.rm=TRUE),
+                                                            upper=quantile(sum_data, 0.975, na.rm=TRUE)), by=c("cvd", "variable")]
 
 
 
@@ -340,14 +342,14 @@ write.dta(final_by_acause_fn_variable_wide, file = "final_by_acause_fn_variable_
 # by time period (96-02, 02-08, 08-13) (1) (chunks 6+6+5)-by type of care
 ### (sum away acause, age, sex)
 ## (sum by chunks to get "3 final_* vars")
- 
+
 
 collapse_the_timez_huge <- wide_merged_string[  variable != "final_effect" &
-                                                              variable != "final_epi_rate_effect" &
-                                                              variable != "final_pop_frac_effect" & 
-                                                              variable != "final_population_effect" & 
-                                                              variable != "final_price_effect" & 
-                                                              variable != "final_util_rate_effect" , ]
+                                                  variable != "final_epi_rate_effect" &
+                                                  variable != "final_pop_frac_effect" & 
+                                                  variable != "final_population_effect" & 
+                                                  variable != "final_price_effect" & 
+                                                  variable != "final_util_rate_effect" , ]
 
 rm(wide_merged_string)
 
@@ -463,18 +465,18 @@ collapse_the_timez_huge[, variable:=NULL]
 
 #### Make a final effect 1 2 and 3 variable
 collapse_the_timez_huge <- collapse_the_timez_huge[effect == "price_effect_1" |
-effect == "util_rate_effect_1" | effect == "epi_rate_effect_1" | effect == "pop_frac_effect_1" | 
-effect == "population_effect_1" , final_effect:= "final_effect_1"]
+                                                     effect == "util_rate_effect_1" | effect == "epi_rate_effect_1" | effect == "pop_frac_effect_1" | 
+                                                     effect == "population_effect_1" , final_effect:= "final_effect_1"]
 
 
 collapse_the_timez_huge <- collapse_the_timez_huge[effect == "price_effect_2" |
-effect == "util_rate_effect_2" | effect == "epi_rate_effect_2" | effect == "pop_frac_effect_2" | 
-effect == "population_effect_2" , final_effect:= "final_effect_2"]
+                                                     effect == "util_rate_effect_2" | effect == "epi_rate_effect_2" | effect == "pop_frac_effect_2" | 
+                                                     effect == "population_effect_2" , final_effect:= "final_effect_2"]
 
 
 collapse_the_timez_huge <- collapse_the_timez_huge[effect == "price_effect_3" |
-effect == "util_rate_effect_3" | effect == "epi_rate_effect_3" | effect == "pop_frac_effect_3" | 
-effect == "population_effect_3" , final_effect:= "final_effect_3"]
+                                                     effect == "util_rate_effect_3" | effect == "epi_rate_effect_3" | effect == "pop_frac_effect_3" | 
+                                                     effect == "population_effect_3" , final_effect:= "final_effect_3"]
 
 
 
@@ -484,44 +486,75 @@ effect == "population_effect_3" , final_effect:= "final_effect_3"]
 ### Melt the draws long
 
 system.time(FINAL_collapse_the_timez_huge_trunc <- melt(collapse_the_timez_huge[, effect:=NULL], 
-							id.vars = c("fn", "acause", "sex", "age", "final_effect"), 
-                           value.name = "data", variable.name = "draw"))
+                                                        id.vars = c("fn", "acause", "sex", "age", "final_effect"), 
+                                                        value.name = "data", variable.name = "draw"))
+
+
+
+#### let's sum away fn, age, sex, effect (JUST ONE LINE PER ACAUSE)
+total_acause_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- FINAL_collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
+                                                                                                         by=c("acause" ,    "draw")]
+
+
+time_effects_by_total_acause_FINAL <- total_acause_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
+                                                                                                     lower = quantile(data, .025, na.rm=T),
+                                                                                                     upper = quantile(data, .975, na.rm=T)), by=c("acause")  ]
+
+
+write.dta(time_effects_by_total_acause_FINAL, file = "time_effects_by_total_acause_FINAL.dta")
 
 
 #### let's sum away acause, age, sex (JUST FOR FINAL EFFECT DAMMIT)
 fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- FINAL_collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
-                                                                          by=c("fn" ,   "final_effect", "draw")]
+                                                                                                         by=c("fn" ,   "final_effect", "draw")]
 
 
 time_effects_by_fn_FINAL <- fn_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
-                                                                         lower = quantile(data, .025, na.rm=T),
-                                                                         upper = quantile(data, .975, na.rm=T)), by=c("fn", "final_effect")  ]
+                                                                                                     lower = quantile(data, .025, na.rm=T),
+                                                                                                     upper = quantile(data, .975, na.rm=T)), by=c("fn", "final_effect")  ]
 
 
 
 write.dta(time_effects_by_fn_FINAL, file = "time_effects_by_fn_FINAL.dta")
 
+
+#### let's sum away fn, age, sex (JUST FOR FINAL EFFECT DAMMIT)
+acause_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- FINAL_collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
+                                                                                                         by=c("acause" ,   "final_effect", "draw")]
+
+
+time_effects_by_acause_FINAL <- acause_FINAL_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
+                                                                                                     lower = quantile(data, .025, na.rm=T),
+                                                                                                     upper = quantile(data, .975, na.rm=T)), by=c("acause", "final_effect")  ]
+
+
+
+write.dta(time_effects_by_acause_FINAL, file = "time_effects_by_acause_FINAL.dta")
+
+
+
+
 # draws <- paste0("d_",c(1:1000))
 
 ### Melt the draws long
 system.time(collapse_the_timez_huge_trunc <- melt(collapse_the_timez_huge, id.vars = c("fn", "acause", "sex", "age", "effect"), 
-                           value.name = "data", variable.name = "draw"))
+                                                  value.name = "data", variable.name = "draw"))
 
 
 #### let's sum away acause, age, sex
 fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
-                                                                          by=c("fn" ,   "effect", "draw")]
+                                                                                             by=c("fn" ,   "effect", "draw")]
 
 
 #### let's sum away fn, age, sex
 acause_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
-                                                                                             by=c("acause" ,   "effect", "draw")]
+                                                                                                 by=c("acause" ,   "effect", "draw")]
 
 
 
 #### let's sum away  age, sex
 acause_fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- collapse_the_timez_huge_trunc[, list(data = sum(data, na.rm=T)), 
-                                                                                             by=c("acause", "fn", "effect", "draw")]
+                                                                                                    by=c("acause", "fn", "effect", "draw")]
 
 
 ### Mean and UIs
@@ -530,8 +563,8 @@ acause_fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- collapse_t
 
 
 time_effects_by_fn <- fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
-                                                                         lower = quantile(data, .025, na.rm=T),
-                                                                         upper = quantile(data, .975, na.rm=T)), by=c("fn", "effect")  ]
+                                                                                         lower = quantile(data, .025, na.rm=T),
+                                                                                         upper = quantile(data, .975, na.rm=T)), by=c("fn", "effect")  ]
 
 
 write.dta(time_effects_by_fn, file = "time_effects_by_fn.dta")
@@ -540,9 +573,9 @@ write.dta(time_effects_by_fn, file = "time_effects_by_fn.dta")
 ### ACAUSE 
 
 time_effects_by_acause <- acause_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
-                                                                                         lower = quantile(data, .025, na.rm=T),
-
-                                                                                         upper = quantile(data, .975, na.rm=T)), by=c("acause", "effect")  ]
+                                                                                                 lower = quantile(data, .025, na.rm=T),
+                                                                                                 
+                                                                                                 upper = quantile(data, .975, na.rm=T)), by=c("acause", "effect")  ]
 write.dta(time_effects_by_acause, file = "time_effects_by_acause.dta")
 
 
@@ -550,101 +583,23 @@ write.dta(time_effects_by_acause, file = "time_effects_by_acause.dta")
 ### ACAUSE - FN
 
 time_effects_by_acause_fn <- acause_fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
-                                                                                         lower = quantile(data, .025, na.rm=T),
-
-                                                                                         upper = quantile(data, .975, na.rm=T)), by=c("acause", "fn",  "effect")  ]
+                                                                                                       lower = quantile(data, .025, na.rm=T),
+                                                                                                       
+                                                                                                       upper = quantile(data, .975, na.rm=T)), by=c("acause", "fn",  "effect")  ]
 write.dta(time_effects_by_acause_fn, file = "time_effects_by_acause_fn.dta")
 
 ### By just effect
 
 ## Sum first
 effect_summed_meltz_collapse_the_timez_huge_finals_trunc <- fn_effect_summed_meltz_collapse_the_timez_huge_finals_trunc[,list(data = sum(data, na.rm=T)), 
-                                                                          by=c("effect", "draw")]
+                                                                                                                        by=c("effect", "draw")]
 
 time_effects <- effect_summed_meltz_collapse_the_timez_huge_finals_trunc[, list(means = mean(data, na.rm=T), 
-                                                                         lower = quantile(data, .025, na.rm=T),
-                                                                         upper = quantile(data, .975, na.rm=T)), by=c( "effect")  ]
+                                                                                lower = quantile(data, .025, na.rm=T),
+                                                                                upper = quantile(data, .975, na.rm=T)), by=c( "effect")  ]
 
 
 write.dta(time_effects, file = "time_effects.dta")
-
-
-
-# ######### TIME EFFECTS FOR NO RENAL & AGE<15
-
-# renal_age15_collapse_the_timez <- wide_merged_string[!(acause == "renal_failure" & age<15) &  (variable != "final_effect" &
-#                                                                                                 variable != "final_epi_rate_effect" &
-#                                                                                                 variable != "final_pop_frac_effect" & 
-#                                                                                                 variable != "final_population_effect" & 
-#                                                                                                 variable != "final_price_effect" & 
-#                                                                                                 variable != "final_util_rate_effect") , ]
-
-
-
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "population_effect_12" | variable == "population_effect_23" | variable == "population_effect_34" | variable == "population_effect_45" | variable == "population_effect_56" | variable == "population_effect_67", effect:= "population_effect_1"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "population_effect_78" | variable == "population_effect_89" | variable == "population_effect_910"  | variable == "population_effect_1011"  | variable == "population_effect_1112" | variable == "population_effect_1213", effect:= "population_effect_2"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "population_effect_1314" | variable == "population_effect_1415" | variable == "population_effect_1516" | variable == "population_effect_1617" | variable == "population_effect_1718", effect:= "population_effect_3"]
-
-
-
-
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "pop_frac_effect_12" | variable == "pop_frac_effect_23" | variable == "pop_frac_effect_34" | variable == "pop_frac_effect_45" | variable == "pop_frac_effect_56" | variable == "pop_frac_effect_67" , effect:= "pop_frac_effect_1"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "pop_frac_effect_78" | variable == "pop_frac_effect_89" | variable == "pop_frac_effect_910" | variable == "pop_frac_effect_1011" | variable == "pop_frac_effect_1112" | variable == "pop_frac_effect_1213" , effect:= "pop_frac_effect_2"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "pop_frac_effect_1314" | variable == "pop_frac_effect_1415" | variable == "pop_frac_effect_1516" | variable == "pop_frac_effect_1617" | variable == "pop_frac_effect_1718" , effect:= "pop_frac_effect_3"]
-
-
-
-
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "epi_rate_effect_12" | variable == "epi_rate_effect_23" | variable == "epi_rate_effect_34" | variable == "epi_rate_effect_45" | variable == "epi_rate_effect_56" | variable == "epi_rate_effect_67", effect:= "epi_rate_effect_1"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "epi_rate_effect_78" | variable == "epi_rate_effect_89" | variable == "epi_rate_effect_910" | variable == "epi_rate_effect_1011" | variable == "epi_rate_effect_1112" | variable == "epi_rate_effect_1213", effect:= "epi_rate_effect_2"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "epi_rate_effect_1314" | variable == "epi_rate_effect_1415" | variable == "epi_rate_effect_1516" | variable == "epi_rate_effect_1617" | variable == "epi_rate_effect_1718", effect:= "epi_rate_effect_3"]
-
-
-
-
-
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "util_rate_effect_12" | variable == "util_rate_effect_23"  | variable == "util_rate_effect_34" | variable == "util_rate_effect_45" | variable == "util_rate_effect_56" | variable == "util_rate_effect_67", effect:= "util_rate_effect_1"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "util_rate_effect_78" | variable == "util_rate_effect_89" | variable == "util_rate_effect_910" | variable == "util_rate_effect_1011" | variable == "util_rate_effect_1112" | variable == "util_rate_effect_1213", effect:= "util_rate_effect_2"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "util_rate_effect_1314" | variable == "util_rate_effect_1415" | variable == "util_rate_effect_1516" | variable == "util_rate_effect_1617" | variable == "util_rate_effect_1718", effect:= "util_rate_effect_3"]
-
-
-
-
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "price_effect_12"  | variable == "price_effect_23" | variable == "price_effect_34" | variable == "price_effect_45" | variable == "price_effect_56" | variable == "price_effect_67", effect:= "price_effect_1"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "price_effect_78" | variable == "price_effect_89" | variable == "price_effect_910"  | variable == "price_effect_1011"  | variable == "price_effect_1112" | variable == "price_effect_1213", effect:= "price_effect_2"]
-# renal_age15_collapse_the_timez <- renal_age15_collapse_the_timez[variable == "price_effect_1314" | variable == "price_effect_1415" | variable == "price_effect_1516" | variable == "price_effect_1617" | variable == "price_effect_1718", effect:= "price_effect_3"]
-
-# renal_age15_collapse_the_timez[, variable:=NULL]
-# setcolorder(renal_age15_collapse_the_timez, c("fn", "acause", "age", "sex", "effect", paste0("d_",c(1:1000))))
-
-
-# ### Melt
-# meltz_renal_age15_collapse_the_timez <- melt(renal_age15_collapse_the_timez, id.vars = c("fn", "acause", "age", "sex", "effect"), value.name = "data", variable.name = "draw")
-
-
-# ## We're gonna sum away effect to unique values first
-# meltz_renal_age15_collapse_the_timez <- meltz_renal_age15_collapse_the_timez[, list(sum_data = sum(data, na.rm=T)), by=c("fn" , "acause", "age", "sex", "effect", "draw")]
-
-
-# #### NOW, let's sum away acause, age, sex
-# summed_meltz_renal_age15_collapse_the_timez <- meltz_renal_age15_collapse_the_timez[, list(data = sum(sum_data, na.rm=T)), by=c("fn" ,   "effect", "draw")]
-
-
-# ### Mean and UIs
-# summed_meltz_renal_age15_collapse_the_timez_stats <- summed_meltz_renal_age15_collapse_the_timez[, list(means = mean(data, na.rm=T), 
-#                                                                                                         lower = quantile(data, 0.025, na.rm=T),
-#                                                                                                         upper = quantile(data, 0.975, na.rm=T)), by=c("fn", "effect")  ]
-
-# write.dta(summed_meltz_renal_age15_collapse_the_timez_stats, file = paste0(jloc, "/without_renal_below_age15/renal_age15_time_effects.dta"))
-
-
-
-
-
-# Sys.time()
-
-# Sys.time() - Start
-
 
 
 
